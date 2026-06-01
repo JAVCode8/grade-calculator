@@ -51,7 +51,7 @@ export default function SubjectRow({ subject, onUpdate, onDelete }: SubjectRowPr
           placeholder="Subject name (e.g. Introduction to Computing)"
           value={subject.name}
           onChange={e => handleNameChange(e.target.value)}
-          className="w-full text-sm text-gray-700 placeholder-gray-300 bg-transparent border-b border-dashed border-red-200 focus:outline-none focus:border-red-500 py-1"
+          className="w-full text-base sm:text-sm text-gray-700 placeholder-gray-300 bg-transparent border-b border-dashed border-red-200 focus:outline-none focus:border-red-500 py-1"
         />
         {subject.isExcluded && (
           <span className="inline-flex items-center gap-1 text-[10px] text-gray-400 mt-1">
@@ -79,7 +79,7 @@ export default function SubjectRow({ subject, onUpdate, onDelete }: SubjectRowPr
               onBlur={() => {
                 if (subject.units < 1) onUpdate({ ...subject, units: 1 });
               }}
-              className="w-10 text-center text-sm text-gray-700 bg-transparent focus:outline-none py-1.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+              className="w-10 text-center text-base sm:text-sm text-gray-700 bg-transparent focus:outline-none py-1.5 [appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
             />
             <button
               onClick={() => handleUnitStep(1)}
