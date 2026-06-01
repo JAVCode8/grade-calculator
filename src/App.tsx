@@ -6,10 +6,10 @@ import { computeCumulativeGWA, getLatinHonor } from './utils/gwa-Calculator';
 type ActiveView = 'dashboard' | 'scanner';
 
 function App() {
-  const [terms, setTerms] = useState<Term[]>([]);
+  const [terms, _setTerms] = useState<Term[]>([]);
   const [activeView, setActiveView] = useState<ActiveView>('dashboard');
-  const [selectedYear, setSelectedYear] = useState<YearLevel>('1st Year');
-  const [selectedTerm, setSelectedTerm] = useState<TermPeriod>('1st Semester');
+  const [_selectedYear, _setSelectedYear] = useState<YearLevel>('1st Year');
+  const [_selectedTerm, _setSelectedTerm] = useState<TermPeriod>('1st Semester');
 
   const cumulativeGWA = computeCumulativeGWA(terms);
   const latinHonor = getLatinHonor(cumulativeGWA);
@@ -24,7 +24,6 @@ function App() {
       />
 
       <main className="flex-1 p-6 overflow-y-auto">
-        {/* Phases 2–5 components go here */}
         <div className="text-gray-400 text-sm">Dashboard content coming in Phase 2...</div>
       </main>
     </div>
