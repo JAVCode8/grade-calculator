@@ -1,18 +1,15 @@
+import { NavLink } from 'react-router-dom';
 import { LayoutDashboard, ScanLine } from 'lucide-react';
-
-type ActiveView = 'dashboard' | 'scanner';
 
 interface HeaderProps {
   gwa: number;
   honor: string;
-  activeView: ActiveView;
-  setActiveView: (view: ActiveView) => void;
 }
 
-export default function Header({ gwa, honor, activeView, setActiveView }: HeaderProps) {
+export default function Header({ gwa, honor }: HeaderProps) {
   const navItems = [
-    { id: 'dashboard' as ActiveView, label: 'Dashboard', icon: LayoutDashboard },
-    { id: 'scanner' as ActiveView, label: 'AI Scanner', icon: ScanLine },
+    { to: '/',        label: 'Dashboard',  icon: LayoutDashboard },
+    { to: '/scanner', label: 'AI Scanner', icon: ScanLine },
   ];
 
   return (
@@ -69,23 +66,27 @@ export default function Header({ gwa, honor, activeView, setActiveView }: Header
         </div>
       </div>
 
-      {/* Nav Row */}
+      {/* Nav Row — using NavLink for active styles */}
       <div className="px-2 md:px-6 flex items-center gap-1 border-t border-blush">
-        {navItems.map(({ id, label, icon: Icon }) => (
-          <button
-            key={id}
-            onClick={() => setActiveView(id)}
-            className={`flex items-center gap-2 px-3 md:px-4 py-3 text-sm font-medium border-b-2 transition-colors
-              ${activeView === id
+        {navItems.map(({ to, label, icon: Icon }) => (
+          <NavLink
+            key={to}
+            to={to}
+            end
+            className={({ isActive }) =>
+              `flex items-center gap-2 px-3 md:px-4 py-3 text-sm font-medium border-b-2 transition-colors
+              ${isActive
                 ? 'border-crimson-700 text-crimson-700'
                 : 'border-transparent text-warm-500 hover:text-crimson-700 hover:border-crimson-200'
-              }`}
+              }`
+            }
           >
             <Icon size={15} />
             {label}
-          </button>
+          </NavLink>
         ))}
       </div>
+
     </header>
   );
 }

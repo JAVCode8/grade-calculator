@@ -1,16 +1,13 @@
+import { Routes, Route, Navigate } from 'react-router-dom';
 import { useState } from 'react';
 import type { Term, YearLevel, TermPeriod } from './types';
 import Header from './components/Header';
-import TermInitializer from './components/TermInitializer';
-import TermCard from './components/TermCard';
-import PolicyNotice from './components/PolicyNotice';
+import DashboardPage from './pages/dashboard/DashboardPage';
+import ScannerPage from './pages/scanner/ScannerPage';
 import { computeCumulativeGWA, getLatinHonor } from './utils/gwaCalculator';
-
-type ActiveView = 'dashboard' | 'scanner';
 
 function App() {
   const [terms, setTerms] = useState<Term[]>([]);
-  const [activeView, setActiveView] = useState<ActiveView>('dashboard');
   const [selectedYear, setSelectedYear] = useState<YearLevel>('1st Year');
   const [selectedTerm, setSelectedTerm] = useState<TermPeriod>('1st Semester');
 
@@ -21,7 +18,7 @@ function App() {
     const exists = terms.find(
       t => t.yearLevel === selectedYear && t.termPeriod === selectedTerm
     );
-    if (exists) return; // prevent duplicates
+    if (exists) return;
 
     const newTerm: Term = {
       id: Math.random().toString(36).slice(2),
@@ -42,60 +39,28 @@ function App() {
 
   return (
     <div className="min-h-screen bg-cream flex flex-col">
-      <Header
-        gwa={cumulativeGWA}
-        honor={latinHonor.honor}
-        activeView={activeView}
-        setActiveView={setActiveView}
-      />
+      <Header gwa={cumulativeGWA} honor={latinHonor.honor} />
 
       <main className="flex-1 p-4 md:p-6 max-w-6xl mx-auto w-full">
-        {activeView === 'dashboard' && (
-          <div className="flex flex-col gap-5">
-
-            {/* Term Initializer */}
-            <TermInitializer
-              selectedYear={selectedYear}
-              selectedTerm={selectedTerm}
-              setSelectedYear={setSelectedYear}
-              setSelectedTerm={setSelectedTerm}
-              onInitialize={handleInitialize}
-            />
-
-            {/* Term Cards Grid */}
-            {terms.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {terms.map(term => (
-                  <TermCard
-                    key={term.id}
-                    term={term}
-                    onUpdate={updated => updateTerm(term.id, updated)}
-                    onDelete={() => deleteTerm(term.id)}
-                  />
-                ))}
-              </div>
-            )}
-
-            {/* Empty State */}
-            {terms.length === 0 && (
-              <div className="text-center py-16 text-gray-300">
-                <p className="text-4xl mb-3">📚</p>
-                <p className="text-sm font-medium">No terms yet.</p>
-                <p className="text-xs">Select a year and term above, then click Initialize Term.</p>
-              </div>
-            )}
-
-            {/* Policy Notice */}
-            <PolicyNotice />
-
-          </div>
-        )}
-
-        {activeView === 'scanner' && (
-          <div className="text-gray-400 text-sm text-center py-16">
-            AI Scanner coming in Phase 5...
-          </div>
-        )}
+        <Routes>
+          <Route
+            index
+            element={
+              <DashboardPage
+                terms={terms}
+                selectedYear={selectedYear}
+                selectedTerm={selectedTerm}
+                setSelectedYear={setSelectedYear}
+                setSelectedTerm={setSelectedTerm}
+                onInitialize={handleInitialize}
+                onUpdateTerm={updateTerm}
+                onDeleteTerm={deleteTerm}
+              />
+            }
+          />
+          <Route path="scanner" element={<ScannerPage />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Routes>
       </main>
     </div>
   );
