@@ -41,7 +41,7 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-red-50 flex flex-col">
+    <div className="min-h-screen bg-cream flex flex-col">
       <Header
         gwa={cumulativeGWA}
         honor={latinHonor.honor}

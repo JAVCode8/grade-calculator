@@ -16,69 +16,76 @@ export default function Header({ gwa, honor, activeView, setActiveView }: Header
   ];
 
   return (
-    <header className="bg-white border-b border-red-100 shadow-sm">
+    <header className="bg-white border-b border-blush shadow-warm-sm">
 
-      {/* Top Row — Logo + GWA */}
+      {/* Top Row */}
       <div className="px-4 md:px-6 py-3 flex items-center justify-between gap-4">
 
         {/* Logo */}
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="w-8 h-8 bg-red-600 rounded-full flex items-center justify-center shrink-0">
+        <div className="flex items-center gap-2.5 shrink-0">
+          <div className="w-8 h-8 bg-crimson-700 rounded-full flex items-center justify-center shrink-0">
             <span className="text-white text-xs font-bold">U</span>
           </div>
-          {/* Hide full name on very small screens */}
           <div>
-            <span className="hidden sm:block text-red-700 font-bold text-sm tracking-wide">
+            <span className="hidden sm:block text-crimson-700 font-bold text-sm tracking-wide">
               UMDC Academic Portal
             </span>
-            <span className="block sm:hidden text-red-700 font-bold text-sm tracking-wide">
+            <span className="block sm:hidden text-crimson-700 font-bold text-sm tracking-wide">
               UMDC Portal
             </span>
           </div>
         </div>
 
-        {/* GWA + Honor — stacks tighter on mobile */}
+        {/* GWA + Honor */}
         <div className="flex items-center gap-3 md:gap-6">
           <div className="text-right">
-            <p className="text-[9px] md:text-[10px] text-gray-400 uppercase tracking-widest">
+            <p className="text-[9px] md:text-[10px] text-warm-500 uppercase tracking-widest">
               Cumulative GWA
             </p>
-            <p className="text-xl md:text-2xl font-bold text-red-600 leading-none">
+            <p className="text-xl md:text-2xl font-bold text-crimson-700 leading-none">
               {gwa > 0 ? gwa.toFixed(2) : '—'}
             </p>
           </div>
 
-          <div className="border-l border-red-100 pl-3 md:pl-6 text-right">
-            <p className="text-[9px] md:text-[10px] text-gray-400 uppercase tracking-widest">
+          <div className="border-l border-blush pl-3 md:pl-6 text-right">
+            <p className="text-[9px] md:text-[10px] text-warm-500 uppercase tracking-widest">
               Projected Honor
             </p>
-            {/* Truncate long honor names on mobile */}
-            <p className="text-xs md:text-sm font-semibold text-gray-700 max-w-[90px] md:max-w-none truncate">
-              {gwa > 0 ? honor : '—'}
-            </p>
+            {gwa > 0 ? (
+              <>
+                <p className="block sm:hidden text-xs font-semibold text-warm-800">
+                  {honor === 'Summa Cum Laude' ? 'Summa' :
+                   honor === 'Magna Cum Laude' ? 'Magna' :
+                   honor === 'Cum Laude' ? 'Cum Laude' : 'No Honor'}
+                </p>
+                <p className="hidden sm:block text-sm font-semibold text-warm-800">
+                  {honor}
+                </p>
+              </>
+            ) : (
+              <p className="text-xs md:text-sm font-semibold text-warm-800">—</p>
+            )}
           </div>
         </div>
       </div>
 
       {/* Nav Row */}
-      <div className="px-2 md:px-6 flex items-center gap-1 border-t border-red-50">
+      <div className="px-2 md:px-6 flex items-center gap-1 border-t border-blush">
         {navItems.map(({ id, label, icon: Icon }) => (
           <button
             key={id}
             onClick={() => setActiveView(id)}
             className={`flex items-center gap-2 px-3 md:px-4 py-3 text-sm font-medium border-b-2 transition-colors
               ${activeView === id
-                ? 'border-red-600 text-red-600'
-                : 'border-transparent text-gray-500 hover:text-red-600 hover:border-red-200'
+                ? 'border-crimson-700 text-crimson-700'
+                : 'border-transparent text-warm-500 hover:text-crimson-700 hover:border-crimson-200'
               }`}
           >
             <Icon size={15} />
-            {/* Always show label — it's short enough */}
             {label}
           </button>
         ))}
       </div>
-
     </header>
   );
 }
