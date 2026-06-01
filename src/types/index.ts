@@ -3,13 +3,14 @@ export interface Subject {
   name: string;
   grade: number;
   units: number;
-  isExcluded: boolean;
+  isExcluded: boolean; // NSTP, PAHF auto-excluded
 }
 
 export interface Term {
   id: string;
-  yearLevel: YearLevel;
-  termPeriod: TermPeriod;
+  yearLevel: string;
+  termPeriod: string;
+  subjects: Subject[];
 }
 
 export type YearLevel = '1st Year' | '2nd Year' | '3rd Year' | '4th Year';
@@ -19,5 +20,5 @@ export interface LatinHonor {
   honor: string;
   range: string;
   min: number;
-  max: number
+  max: number;
 }
