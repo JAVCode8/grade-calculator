@@ -1,25 +1,39 @@
 // 1. Internal — types
 import type { Subject, Term, LatinHonor } from '../types';
 
-// ─── Constants ───────────────────────────────────────────
+// ─── Excluded Subject Keywords ────────────────────────────
+// Sources:
+// - UM Student Handbook Section 2.9.2 Page 40: "PE, NSTP and CAED 500"
+// - PAHF variants based on actual UMDC subject names
 export const EXCLUDED_KEYWORDS = [
-  'NSTP',
-  'NATIONAL SERVICE TRAINING',
-  'CWTS',
-  'LTS',
-  'ROTC',
-  'PAHF',
-  'MOVEMENT COMPETENCY',
-  'PATHFIT',
-  'PHYSICAL ACTIVITY',
-  'PE ',
-  'CAED',
+  // ── NSTP and all its components ──
+  'NSTP',                       // catches: NSTP 1, NSTP 2
+  'NATIONAL SERVICE TRAINING',  // catches: NATIONAL SERVICE TRAINING PROGRAM 1 & 2
+  'CWTS',                       // Civic Welfare Training Service
+  'LTS',                        // Literacy Training Service
+  'ROTC',                       // Reserve Officers Training Corps
+
+  // ── PAHF and all its subject name variants (UMDC specific) ──
+  'PAHF',                       // catches: PAHF 1, PAHF 2, PAHF 3, PAHF 4
+  'MOVEMENT COMPETENCY',        // PAHF 1: Movement Competency Training
+  'EXERCISE-BASED FITNESS',     // PAHF 2: Exercise-Based Fitness Activities
+  'DANCE AND SPORTS',           // PAHF 3 & 4: Dance and Sports 1 & 2
+
+  // ── Physical Education general variants ──
+  'PATHFIT',                    // PATHFit used in other schools
+  'PHYSICAL ACTIVITY',          // generic PE variant
+  'PHYSICAL EDUCATION',         // traditional PE full name
+
+  // ── UM specific excluded subject ──
+  'CAED',                       // CAED 500: Career and Personality Development
 ];
 
+// ─── Grade & Unit Options ─────────────────────────────────
 export const GRADE_OPTIONS = [4.0, 3.5, 3.0, 2.5, 2.0, 1.0];
 
 export const UNIT_OPTIONS = [1, 2, 3, 4, 5, 6];
 
+// ─── UMDC Grade Scale (Effective AY 2020-2021) ───────────
 export const GRADE_SCALE = [
   { grade: 4.0, range: '96 – 100', description: 'High Distinction', label: 'A'  },
   { grade: 3.5, range: '90 – 95',  description: 'Distinction',      label: 'B+' },
@@ -30,6 +44,7 @@ export const GRADE_SCALE = [
 ];
 
 // ─── Latin Honors (Effective SY 2023-2024, 4.0 scale) ────
+// Source: UM Student Handbook Section 2.9.2 Page 40
 export const LATIN_HONORS: LatinHonor[] = [
   { honor: 'Summa Cum Laude', range: '3.51 – 4.00', min: 3.51, max: 4.00 },
   { honor: 'Magna Cum Laude', range: '3.27 – 3.50', min: 3.27, max: 3.50 },
@@ -40,16 +55,24 @@ export const LATIN_HONORS: LatinHonor[] = [
 // ─── Helpers ─────────────────────────────────────────────
 export const isExcludedSubject = (name: string): boolean => {
   const upper = name.toUpperCase();
-  return EXCLUDED_KEYWORDS.some(keyword => upper.includes(keyword));
+  return EXCLUDED_KEYWORDS.some(keyword =>
+    upper.includes(keyword.toUpperCase())
+  );
 };
 
 // ─── GWA Calculators ─────────────────────────────────────
 export const computeTermGWA = (subjects: Subject[]): number => {
-  const eligible = subjects.filter(s => !s.isExcluded && s.name.trim() !== '');
+  const eligible = subjects.filter(
+    s => !s.isExcluded && s.name.trim() !== ''
+  );
   if (eligible.length === 0) return 0;
 
-  const totalWeighted = eligible.reduce((sum, s) => sum + s.grade * s.units, 0);
-  const totalUnits    = eligible.reduce((sum, s) => sum + s.units, 0);
+  const totalWeighted = eligible.reduce(
+    (sum, s) => sum + s.grade * s.units, 0
+  );
+  const totalUnits = eligible.reduce(
+    (sum, s) => sum + s.units, 0
+  );
 
   if (totalUnits === 0) return 0;
   return parseFloat((totalWeighted / totalUnits).toFixed(2));
@@ -62,13 +85,20 @@ export const computeCumulativeGWA = (terms: Term[]): number => {
 
   if (allEligible.length === 0) return 0;
 
-  const totalWeighted = allEligible.reduce((sum, s) => sum + s.grade * s.units, 0);
-  const totalUnits    = allEligible.reduce((sum, s) => sum + s.units, 0);
+  const totalWeighted = allEligible.reduce(
+    (sum, s) => sum + s.grade * s.units, 0
+  );
+  const totalUnits = allEligible.reduce(
+    (sum, s) => sum + s.units, 0
+  );
 
   if (totalUnits === 0) return 0;
   return parseFloat((totalWeighted / totalUnits).toFixed(2));
 };
 
 export const getLatinHonor = (gwa: number): LatinHonor => {
-  return LATIN_HONORS.find(h => gwa >= h.min && gwa <= h.max) ?? LATIN_HONORS[3];
+  return (
+    LATIN_HONORS.find(h => gwa >= h.min && gwa <= h.max)
+    ?? LATIN_HONORS[3]
+  );
 };
