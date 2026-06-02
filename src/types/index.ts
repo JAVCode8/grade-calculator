@@ -3,7 +3,7 @@ export interface Subject {
   name: string;
   grade: number;
   units: number;
-  isExcluded: boolean; // NSTP, PAHF auto-excluded
+  isExcluded: boolean;
 }
 
 export interface Term {
@@ -21,4 +21,20 @@ export interface LatinHonor {
   range: string;
   min: number;
   max: number;
+}
+
+export interface ScholarshipCategory {
+  category: string;
+  label: string;
+  gwaRange: string;
+  min: number;
+  max: number;
+  minGrade: string;
+  benefits: string[];
+  color: {
+    card: string;
+    badge: string;
+    text: string;
+    bar: string;
+  };
 }

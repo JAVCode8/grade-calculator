@@ -1,15 +1,19 @@
+// 1. Third-party
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, ScanLine } from 'lucide-react';
+import { LayoutDashboard, Trophy, ScanLine } from 'lucide-react';
 
+// ─── Types ───────────────────────────────────────────────
 interface HeaderProps {
   gwa: number;
   honor: string;
 }
 
+// ─── Component ───────────────────────────────────────────
 export default function Header({ gwa, honor }: HeaderProps) {
   const navItems = [
     { to: '/',        label: 'Dashboard',  icon: LayoutDashboard },
-    { to: '/scanner', label: 'AI Scanner', icon: ScanLine },
+    { to: '/honors',  label: 'Honors',     icon: Trophy          },
+    { to: '/scanner', label: 'AI Scanner', icon: ScanLine        },
   ];
 
   return (
@@ -21,14 +25,14 @@ export default function Header({ gwa, honor }: HeaderProps) {
         {/* Logo */}
         <div className="flex items-center gap-2.5 shrink-0">
           <div className="w-8 h-8 bg-crimson-700 rounded-full flex items-center justify-center shrink-0">
-            <span className="text-white text-xs font-bold">G</span>
+            <span className="text-white text-xs font-bold">U</span>
           </div>
           <div>
             <span className="hidden sm:block text-crimson-700 font-bold text-sm tracking-wide">
-              GWA Calculator
+              UMDC Academic Portal
             </span>
             <span className="block sm:hidden text-crimson-700 font-bold text-sm tracking-wide">
-              GWA Calculator
+              UMDC Portal
             </span>
           </div>
         </div>
@@ -53,7 +57,7 @@ export default function Header({ gwa, honor }: HeaderProps) {
                 <p className="block sm:hidden text-xs font-semibold text-warm-800">
                   {honor === 'Summa Cum Laude' ? 'Summa' :
                    honor === 'Magna Cum Laude' ? 'Magna' :
-                   honor === 'Cum Laude' ? 'Cum Laude' : 'No Honor'}
+                   honor === 'Cum Laude'       ? 'Cum Laude' : 'No Honor'}
                 </p>
                 <p className="hidden sm:block text-sm font-semibold text-warm-800">
                   {honor}
@@ -66,15 +70,15 @@ export default function Header({ gwa, honor }: HeaderProps) {
         </div>
       </div>
 
-      {/* Nav Row — using NavLink for active styles */}
-      <div className="px-2 md:px-6 flex items-center gap-1 border-t border-blush">
+      {/* Nav Row */}
+      <div className="px-2 md:px-6 flex items-center gap-1 border-t border-blush overflow-x-auto">
         {navItems.map(({ to, label, icon: Icon }) => (
           <NavLink
             key={to}
             to={to}
             end
             className={({ isActive }) =>
-              `flex items-center gap-2 px-3 md:px-4 py-3 text-sm font-medium border-b-2 transition-colors
+              `flex items-center gap-2 px-3 md:px-4 py-3 text-sm font-medium border-b-2 transition-colors whitespace-nowrap
               ${isActive
                 ? 'border-crimson-700 text-crimson-700'
                 : 'border-transparent text-warm-500 hover:text-crimson-700 hover:border-crimson-200'
