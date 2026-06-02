@@ -21,14 +21,14 @@ export default function Header({ gwa, honor }: HeaderProps) {
         {/* Logo */}
         <div className="flex items-center gap-2.5 shrink-0">
           <div className="w-8 h-8 bg-crimson-700 rounded-full flex items-center justify-center shrink-0">
-            <span className="text-white text-xs font-bold">U</span>
+            <span className="text-white text-xs font-bold">G</span>
           </div>
           <div>
             <span className="hidden sm:block text-crimson-700 font-bold text-sm tracking-wide">
-              UMDC Academic Portal
+              GWA Calculator
             </span>
             <span className="block sm:hidden text-crimson-700 font-bold text-sm tracking-wide">
-              UMDC Portal
+              GWA Calculator
             </span>
           </div>
         </div>
