@@ -1,31 +1,28 @@
-// 1. React core
-import { useState } from 'react';
-
-// 2. Third-party
+import { useState, useEffect } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
-
-// 3. Internal — types
 import type { Term, YearLevel, TermPeriod } from './types';
-
-// 4. Internal — utils
 import { computeCumulativeGWA, getLatinHonor } from './utils/gwaCalculator';
-
-// 5. Internal — components
 import Header from './components/Header';
-
-// 6. Internal — pages
 import DashboardPage from './pages/dashboard/DashboardPage';
 import HonorsPage from './pages/honors/HonorsPage';
 import ScannerPage from './pages/scanner/ScannerPage';
 
 // ─── Component ───────────────────────────────────────────
 function App() {
-  const [terms, setTerms] = useState<Term[]>([]);
+  const [terms, setTerms] = useState<Term[]>(() => {
+    const saved = localStorage.getItem('umdc-terms');
+    return saved ? JSON.parse(saved) : [];
+  });
+
+  useEffect(() => {
+    localStorage.setItem('umdc-terms', JSON.stringify(terms));
+  }, [terms]);
+
   const [selectedYear, setSelectedYear] = useState<YearLevel>('1st Year');
   const [selectedTerm, setSelectedTerm] = useState<TermPeriod>('1st Semester');
 
   const cumulativeGWA = computeCumulativeGWA(terms);
-  const latinHonor    = getLatinHonor(cumulativeGWA);
+  const latinHonor = getLatinHonor(cumulativeGWA);
 
   const handleInitialize = () => {
     const exists = terms.find(
@@ -34,10 +31,10 @@ function App() {
     if (exists) return;
 
     const newTerm: Term = {
-      id:         Math.random().toString(36).slice(2),
-      yearLevel:  selectedYear,
+      id: Math.random().toString(36).slice(2),
+      yearLevel: selectedYear,
       termPeriod: selectedTerm,
-      subjects:   [],
+      subjects: [],
     };
     setTerms(prev => [...prev, newTerm]);
   };
