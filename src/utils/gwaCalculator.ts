@@ -2,7 +2,19 @@
 import type { Subject, Term, LatinHonor } from '../types';
 
 // ─── Constants ───────────────────────────────────────────
-export const EXCLUDED_KEYWORDS = ['NSTP', 'PAHF', 'ROTC', 'CWTS', 'LTS', 'PE', 'CAED'];
+export const EXCLUDED_KEYWORDS = [
+  'NSTP',
+  'NATIONAL SERVICE TRAINING',
+  'CWTS',
+  'LTS',
+  'ROTC',
+  'PAHF',
+  'MOVEMENT COMPETENCY',
+  'PATHFIT',
+  'PHYSICAL ACTIVITY',
+  'PE ',
+  'CAED',
+];
 
 export const GRADE_OPTIONS = [4.0, 3.5, 3.0, 2.5, 2.0, 1.0];
 

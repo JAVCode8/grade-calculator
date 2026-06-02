@@ -1,6 +1,9 @@
-// 1. Third-party
+// 1. React core
+import { useState } from 'react';
+
+// 2. Third-party
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Trophy, ScanLine } from 'lucide-react';
+import { LayoutDashboard, Trophy, ScanLine, X, AlertCircle } from 'lucide-react';
 
 // ─── Types ───────────────────────────────────────────────
 interface HeaderProps {
@@ -8,18 +11,42 @@ interface HeaderProps {
   honor: string;
 }
 
+// ─── Constants ───────────────────────────────────────────
+const EXCLUDED_NOTICE = 'Reminder: NSTP, PAHF (Movement Competency Training), PE, CWTS, LTS, ROTC, and CAED subjects are automatically excluded from GWA computation per UM academic policy.';
+
 // ─── Component ───────────────────────────────────────────
 export default function Header({ gwa, honor }: HeaderProps) {
+  const [showBanner, setShowBanner] = useState(true);
+
   const navItems = [
-    { to: '/',        label: 'Dashboard',  icon: LayoutDashboard },
-    { to: '/honors',  label: 'Honors',     icon: Trophy          },
-    { to: '/scanner', label: 'AI Scanner', icon: ScanLine        },
+    { to: '/',        label: 'Dashboard', icon: LayoutDashboard },
+    { to: '/honors',  label: 'Honors',    icon: Trophy          },
+    { to: '/scanner', label: 'AI Scanner', icon: ScanLine       },
   ];
 
   return (
     <header className="bg-white border-b border-blush shadow-warm-sm">
 
-      {/* Top Row */}
+      {/* ── Dismissible Reminder Banner ── */}
+      {showBanner && (
+        <div className="bg-crimson-50 border-b border-crimson-200 px-4 py-2 flex items-start sm:items-center justify-between gap-3">
+          <div className="flex items-start sm:items-center gap-2">
+            <AlertCircle size={14} className="text-crimson-700 shrink-0 mt-0.5 sm:mt-0" />
+            <p className="text-[11px] sm:text-xs text-crimson-700 leading-relaxed">
+              {EXCLUDED_NOTICE}
+            </p>
+          </div>
+          <button
+            onClick={() => setShowBanner(false)}
+            className="shrink-0 p-0.5 text-crimson-400 hover:text-crimson-700 transition-colors rounded"
+            aria-label="Dismiss reminder"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
+
+      {/* ── Top Row ── */}
       <div className="px-4 md:px-6 py-3 flex items-center justify-between gap-4">
 
         {/* Logo */}
@@ -70,7 +97,7 @@ export default function Header({ gwa, honor }: HeaderProps) {
         </div>
       </div>
 
-      {/* Nav Row */}
+      {/* ── Nav Row ── */}
       <div className="px-2 md:px-6 flex items-center gap-1 border-t border-blush overflow-x-auto">
         {navItems.map(({ to, label, icon: Icon }) => (
           <NavLink

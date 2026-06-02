@@ -1,13 +1,20 @@
+// 1. Third-party
 import { Trash2, Lock } from 'lucide-react';
-import type { Subject } from '../types';
-import { GRADE_OPTIONS } from '../utils/gwaCalculator';
 
+// 2. Internal — types
+import type { Subject } from '../types';
+
+// 3. Internal — utils
+import { GRADE_OPTIONS, EXCLUDED_KEYWORDS } from '../utils/gwaCalculator';
+
+// ─── Types ───────────────────────────────────────────────
 interface SubjectRowProps {
   subject: Subject;
   onUpdate: (updated: Subject) => void;
   onDelete: () => void;
 }
 
+// ─── Component ───────────────────────────────────────────
 export default function SubjectRow({ subject, onUpdate, onDelete }: SubjectRowProps) {
   const handleGradeStep = (dir: 1 | -1) => {
     const idx = GRADE_OPTIONS.indexOf(subject.grade);
@@ -33,9 +40,10 @@ export default function SubjectRow({ subject, onUpdate, onDelete }: SubjectRowPr
     }
   };
 
+  // ── Uses the shared EXCLUDED_KEYWORDS so it's always in sync ──
   const handleNameChange = (name: string) => {
-    const isExcluded = ['NSTP', 'PAHF', 'ROTC', 'CWTS', 'LTS'].some(k =>
-      name.toUpperCase().includes(k)
+    const isExcluded = EXCLUDED_KEYWORDS.some(k =>
+      name.toUpperCase().includes(k.toUpperCase())
     );
     onUpdate({ ...subject, name, isExcluded });
   };
@@ -123,6 +131,7 @@ export default function SubjectRow({ subject, onUpdate, onDelete }: SubjectRowPr
             <Trash2 size={15} />
           </button>
         </div>
+
       </div>
     </div>
   );
