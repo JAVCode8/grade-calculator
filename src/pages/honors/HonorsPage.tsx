@@ -1,36 +1,53 @@
 // 1. Third-party
-import { Trophy, GraduationCap, BookOpen, AlertCircle, CheckCircle2 } from 'lucide-react';
+import { Trophy, GraduationCap, BookOpen, AlertCircle, CheckCircle2, XCircle } from 'lucide-react';
 
-// 2. Internal — constants
+// 2. Internal — types
+import type { Term } from '../../types';
+
+// 3. Internal — constants
 import { HONOR_SCHOLARSHIPS, FRESHMAN_SCHOLARSHIPS } from '../../constants/scholarship';
 
-// 3. Internal — utils
-import { LATIN_HONORS, GRADE_SCALE } from '../../utils/gwaCalculator';
+// 4. Internal — utils
+import {
+  LATIN_HONORS,
+  GRADE_SCALE,
+  checkHonorQualification,
+  MIN_GRADE_REQUIREMENT,
+} from '../../utils/gwaCalculator';
 
 // ─── Types ───────────────────────────────────────────────
 interface HonorsPageProps {
   currentGWA: number;
+  terms: Term[];
 }
 
 // ─── Helpers ─────────────────────────────────────────────
 const getLatinHonorStyle = (honor: string) => {
   switch (honor) {
-    case 'Summa Cum Laude': return { card: 'bg-yellow-50 border-yellow-300', text: 'text-yellow-700', badge: 'bg-yellow-100 text-yellow-700 border-yellow-300', bar: 'bg-yellow-400' };
-    case 'Magna Cum Laude': return { card: 'bg-blue-50 border-blue-300',   text: 'text-blue-700',   badge: 'bg-blue-100 text-blue-700 border-blue-300',     bar: 'bg-blue-400'   };
+    case 'Summa Cum Laude': return { card: 'bg-yellow-50 border-yellow-300',   text: 'text-yellow-700',  badge: 'bg-yellow-100 text-yellow-700 border-yellow-300',   bar: 'bg-yellow-400'  };
+    case 'Magna Cum Laude': return { card: 'bg-blue-50 border-blue-300',       text: 'text-blue-700',    badge: 'bg-blue-100 text-blue-700 border-blue-300',         bar: 'bg-blue-400'    };
     case 'Cum Laude':       return { card: 'bg-emerald-50 border-emerald-300', text: 'text-emerald-700', badge: 'bg-emerald-100 text-emerald-700 border-emerald-300', bar: 'bg-emerald-400' };
-    default:                return { card: 'bg-warm-50 border-warm-200',   text: 'text-warm-500',   badge: 'bg-warm-100 text-warm-500 border-warm-200',       bar: 'bg-warm-300'   };
+    default:                return { card: 'bg-warm-50 border-warm-200',       text: 'text-warm-500',    badge: 'bg-warm-100 text-warm-500 border-warm-200',           bar: 'bg-warm-300'    };
   }
 };
 
 // ─── Component ───────────────────────────────────────────
-export default function HonorsPage({ currentGWA }: HonorsPageProps) {
+export default function HonorsPage({ currentGWA, terms }: HonorsPageProps) {
   const currentLatinHonor = LATIN_HONORS.find(
     h => currentGWA >= h.min && currentGWA <= h.max
   ) ?? LATIN_HONORS[3];
 
-  const currentScholarship = HONOR_SCHOLARSHIPS.find(
-    s => currentGWA >= s.min && currentGWA <= s.max
-  ) ?? null;
+  const qualification     = checkHonorQualification(terms);
+  const isDisqualified    = currentGWA > 0 && !qualification.qualifies;
+  const hasSubjects       = terms.flatMap(t => t.subjects).some(
+    s => !s.isExcluded && s.name.trim() !== ''
+  );
+
+  const currentScholarship = !isDisqualified
+    ? HONOR_SCHOLARSHIPS.find(
+        s => currentGWA >= s.min && currentGWA <= s.max
+      ) ?? null
+    : null;
 
   return (
     <div className="flex flex-col gap-6">
@@ -43,8 +60,56 @@ export default function HonorsPage({ currentGWA }: HonorsPageProps) {
         </p>
       </div>
 
+      {/* ── Disqualification Alert ── */}
+      {isDisqualified && (
+        <div className="rounded-xl border border-red-300 bg-red-50 p-4 md:p-5">
+          <div className="flex items-start gap-3">
+            <XCircle size={18} className="text-red-600 shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-bold text-red-700 mb-1">
+                Not Qualified for Any Honor or Scholarship
+              </p>
+              <p className="text-xs text-red-600 leading-relaxed mb-3">
+                You have{' '}
+                <span className="font-bold">
+                  {qualification.disqualifyingSubjects.length}{' '}
+                  {qualification.disqualifyingSubjects.length === 1
+                    ? 'subject'
+                    : 'subjects'}
+                </span>{' '}
+                with a grade below{' '}
+                <span className="font-bold">{MIN_GRADE_REQUIREMENT.toFixed(1)}</span>.
+                Per UM Handbook Section 2.9.2, a candidate must have{' '}
+                <span className="font-bold">no grade below 2.5</span> in any
+                subject to qualify for Latin Honors or Scholarships.
+              </p>
+
+              {/* Disqualifying Subjects */}
+              <div className="flex flex-col gap-1.5">
+                <p className="text-[10px] uppercase tracking-widest text-red-500 font-semibold">
+                  Subjects below 2.5:
+                </p>
+                {qualification.disqualifyingSubjects.map(subject => (
+                  <div
+                    key={subject.id}
+                    className="flex items-center justify-between px-3 py-2 bg-white border border-red-200 rounded-lg"
+                  >
+                    <span className="text-xs font-medium text-red-700">
+                      {subject.name}
+                    </span>
+                    <span className="text-xs font-bold text-red-600">
+                      Grade: {subject.grade.toFixed(1)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* ── Current Standing Banner ── */}
-      {currentGWA > 0 ? (
+      {currentGWA > 0 && !isDisqualified ? (
         <div className={`rounded-xl border p-4 md:p-5 ${getLatinHonorStyle(currentLatinHonor.honor).card}`}>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
@@ -60,7 +125,7 @@ export default function HonorsPage({ currentGWA }: HonorsPageProps) {
                 </p>
               )}
             </div>
-            <div className={`text-right shrink-0`}>
+            <div className="text-right shrink-0">
               <p className={`text-[10px] uppercase tracking-widest ${getLatinHonorStyle(currentLatinHonor.honor).text}`}>
                 Cumulative GWA
               </p>
@@ -70,10 +135,10 @@ export default function HonorsPage({ currentGWA }: HonorsPageProps) {
             </div>
           </div>
         </div>
-      ) : (
+      ) : currentGWA === 0 && (
         <div className="rounded-xl border border-blush bg-white p-5 text-center">
           <p className="text-sm text-warm-300">
-            Go to Dashboard, add your subjects to see your honor standing.
+            Go to Dashboard and add your subjects to see your honor standing.
           </p>
         </div>
       )}
@@ -95,7 +160,8 @@ export default function HonorsPage({ currentGWA }: HonorsPageProps) {
 
           <div className="px-4 md:px-5 py-4 flex flex-col gap-2">
             {LATIN_HONORS.filter(h => h.honor !== 'No Honor').map(honor => {
-              const isActive = currentGWA > 0 && currentLatinHonor.honor === honor.honor;
+              const isActive = !isDisqualified && currentGWA > 0 &&
+                currentLatinHonor.honor === honor.honor;
               const style    = getLatinHonorStyle(honor.honor);
               return (
                 <div
@@ -121,12 +187,12 @@ export default function HonorsPage({ currentGWA }: HonorsPageProps) {
             })}
           </div>
 
-          {/* Requirement note */}
           <div className="px-4 md:px-5 pb-4">
             <div className="flex gap-2 bg-crimson-50 rounded-lg px-3 py-2.5">
               <AlertCircle size={13} className="text-crimson-700 shrink-0 mt-0.5" />
               <p className="text-[11px] text-crimson-700 leading-relaxed">
-                Candidates must have <strong>no grade below 2.5</strong> in any subject.
+                Candidates must have{' '}
+                <strong>no grade below 2.5</strong> in any subject.
                 PE, NSTP, and CAED 500 are excluded from GWA computation.
               </p>
             </div>
@@ -140,14 +206,17 @@ export default function HonorsPage({ currentGWA }: HonorsPageProps) {
               <Trophy size={14} className="text-crimson-700" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-warm-900">Honor Society & College Scholarship</h2>
+              <h2 className="text-sm font-semibold text-warm-900">
+                Honor Society & College Scholarship
+              </h2>
               <p className="text-[10px] text-warm-400">2nd to 4th/5th Year Students</p>
             </div>
           </div>
 
           <div className="px-4 md:px-5 py-4 flex flex-col gap-3">
             {HONOR_SCHOLARSHIPS.map(scholarship => {
-              const isActive = currentGWA > 0 &&
+              const isActive = !isDisqualified &&
+                hasSubjects &&
                 currentGWA >= scholarship.min &&
                 currentGWA <= scholarship.max;
 
@@ -157,15 +226,19 @@ export default function HonorsPage({ currentGWA }: HonorsPageProps) {
                   className={`rounded-lg border p-3 transition-all
                     ${isActive ? scholarship.color.card : 'bg-warm-50 border-blush'}`}
                 >
-                  {/* Category Header */}
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      {isActive && <CheckCircle2 size={13} className={scholarship.color.text} />}
+                      {isActive
+                        ? <CheckCircle2 size={13} className={scholarship.color.text} />
+                        : <CheckCircle2 size={13} className="text-warm-300" />
+                      }
                       <div>
-                        <span className={`text-xs font-bold ${isActive ? scholarship.color.text : 'text-warm-700'}`}>
+                        <span className={`text-xs font-bold
+                          ${isActive ? scholarship.color.text : 'text-warm-700'}`}>
                           {scholarship.label}
                         </span>
-                        <span className={`text-[10px] ml-1.5 ${isActive ? scholarship.color.text : 'text-warm-400'}`}>
+                        <span className={`text-[10px] ml-1.5
+                          ${isActive ? scholarship.color.text : 'text-warm-400'}`}>
                           {scholarship.category}
                         </span>
                       </div>
@@ -176,20 +249,21 @@ export default function HonorsPage({ currentGWA }: HonorsPageProps) {
                     </span>
                   </div>
 
-                  {/* Benefits */}
                   <div className="flex flex-col gap-1">
                     {scholarship.benefits.map((benefit, i) => (
                       <div key={i} className="flex items-start gap-1.5">
-                        <span className={`text-[10px] mt-0.5 ${isActive ? scholarship.color.text : 'text-warm-300'}`}>•</span>
-                        <span className={`text-[11px] ${isActive ? scholarship.color.text : 'text-warm-500'}`}>
+                        <span className={`text-[10px] mt-0.5
+                          ${isActive ? scholarship.color.text : 'text-warm-300'}`}>•</span>
+                        <span className={`text-[11px]
+                          ${isActive ? scholarship.color.text : 'text-warm-500'}`}>
                           {benefit}
                         </span>
                       </div>
                     ))}
                   </div>
 
-                  {/* Min grade requirement */}
-                  <p className={`text-[10px] mt-2 font-medium ${isActive ? scholarship.color.text : 'text-warm-400'}`}>
+                  <p className={`text-[10px] mt-2 font-medium
+                    ${isActive ? scholarship.color.text : 'text-warm-400'}`}>
                     Requirement: {scholarship.minGrade}
                   </p>
                 </div>
@@ -205,8 +279,12 @@ export default function HonorsPage({ currentGWA }: HonorsPageProps) {
               <BookOpen size={14} className="text-crimson-700" />
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-warm-900">Freshman Academic Scholarship</h2>
-              <p className="text-[10px] text-warm-400">Entering Freshmen — SHS Honor Graduates</p>
+              <h2 className="text-sm font-semibold text-warm-900">
+                Freshman Academic Scholarship
+              </h2>
+              <p className="text-[10px] text-warm-400">
+                Entering Freshmen — SHS Honor Graduates
+              </p>
             </div>
           </div>
 
@@ -228,14 +306,16 @@ export default function HonorsPage({ currentGWA }: HonorsPageProps) {
                   {scholarship.benefits.map((benefit, i) => (
                     <div key={i} className="flex items-start gap-1.5">
                       <span className={`text-[10px] mt-0.5 ${scholarship.color.text}`}>•</span>
-                      <span className={`text-[11px] ${scholarship.color.text}`}>{benefit}</span>
+                      <span className={`text-[11px] ${scholarship.color.text}`}>
+                        {benefit}
+                      </span>
                     </div>
                   ))}
                 </div>
               </div>
             ))}
             <p className="text-[10px] text-warm-400 mt-1">
-              For top 10 graduates of SHS with 150+ graduating students.
+              Based on SHS final grades. Top 10 of graduating class with 150+ students.
             </p>
           </div>
         </div>
@@ -248,7 +328,9 @@ export default function HonorsPage({ currentGWA }: HonorsPageProps) {
             </div>
             <div>
               <h2 className="text-sm font-semibold text-warm-900">UMDC Grade Scale</h2>
-              <p className="text-[10px] text-warm-400">Undergraduate — Effective AY 2020-2021</p>
+              <p className="text-[10px] text-warm-400">
+                Undergraduate — Effective AY 2020-2021
+              </p>
             </div>
           </div>
 
@@ -270,7 +352,8 @@ export default function HonorsPage({ currentGWA }: HonorsPageProps) {
 
           <div className="px-4 md:px-5 pb-4">
             <p className="text-[10px] text-warm-300 text-center">
-              Source: UM Student Handbook (AY 2020-2021). Always verify with your registrar.
+              Source: UM Student Handbook (AY 2020-2021).
+              Always verify with your registrar.
             </p>
           </div>
         </div>

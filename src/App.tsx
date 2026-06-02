@@ -1,11 +1,22 @@
+// 1. React core
 import { useState, useEffect } from 'react';
+
+// 2. Third-party
 import { Routes, Route, Navigate } from 'react-router-dom';
+
+// 3. Internal — types
 import type { Term, YearLevel, TermPeriod } from './types';
+
+// 4. Internal — utils
 import { computeCumulativeGWA, getLatinHonor } from './utils/gwaCalculator';
+
+// 5. Internal — components
 import Header from './components/Header';
+
+// 6. Internal — pages
 import DashboardPage from './pages/dashboard/DashboardPage';
-import HonorsPage from './pages/honors/HonorsPage';
-import ScannerPage from './pages/scanner/ScannerPage';
+import HonorsPage    from './pages/honors/HonorsPage';
+import ScannerPage   from './pages/scanner/ScannerPage';
 
 // ─── Component ───────────────────────────────────────────
 function App() {
@@ -13,16 +24,16 @@ function App() {
     const saved = localStorage.getItem('umdc-terms');
     return saved ? JSON.parse(saved) : [];
   });
+  const [selectedYear, setSelectedYear] = useState<YearLevel>('1st Year');
+  const [selectedTerm, setSelectedTerm] = useState<TermPeriod>('1st Semester');
 
+  // ── Persist to localStorage ──
   useEffect(() => {
     localStorage.setItem('umdc-terms', JSON.stringify(terms));
   }, [terms]);
 
-  const [selectedYear, setSelectedYear] = useState<YearLevel>('1st Year');
-  const [selectedTerm, setSelectedTerm] = useState<TermPeriod>('1st Semester');
-
   const cumulativeGWA = computeCumulativeGWA(terms);
-  const latinHonor = getLatinHonor(cumulativeGWA);
+  const latinHonor    = getLatinHonor(cumulativeGWA);
 
   const handleInitialize = () => {
     const exists = terms.find(
@@ -31,10 +42,10 @@ function App() {
     if (exists) return;
 
     const newTerm: Term = {
-      id: Math.random().toString(36).slice(2),
-      yearLevel: selectedYear,
+      id:         Math.random().toString(36).slice(2),
+      yearLevel:  selectedYear,
       termPeriod: selectedTerm,
-      subjects: [],
+      subjects:   [],
     };
     setTerms(prev => [...prev, newTerm]);
   };
@@ -49,7 +60,11 @@ function App() {
 
   return (
     <div className="min-h-screen bg-cream flex flex-col">
-      <Header gwa={cumulativeGWA} honor={latinHonor.honor} />
+      <Header
+        gwa={cumulativeGWA}
+        honor={latinHonor.honor}
+        terms={terms}
+      />
 
       <main className="flex-1 p-4 md:p-6 max-w-6xl mx-auto w-full">
         <Routes>
@@ -68,7 +83,15 @@ function App() {
               />
             }
           />
-          <Route path="honors" element={<HonorsPage currentGWA={cumulativeGWA} />} />
+          <Route
+            path="honors"
+            element={
+              <HonorsPage
+                currentGWA={cumulativeGWA}
+                terms={terms}
+              />
+            }
+          />
           <Route path="scanner" element={<ScannerPage />} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

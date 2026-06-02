@@ -3,37 +3,71 @@ import { useState } from 'react';
 
 // 2. Third-party
 import { NavLink } from 'react-router-dom';
-import { LayoutDashboard, Trophy, ScanLine, X, AlertCircle } from 'lucide-react';
+import { LayoutDashboard, Trophy, ScanLine, X, AlertCircle, BookOpen } from 'lucide-react';
+
+// 3. Internal — types
+import type { Term } from '../types';
+
+// 4. Internal — utils
+import {
+  computeOverallStats,
+  checkHonorQualification,
+  MIN_GRADE_REQUIREMENT,
+} from '../utils/gwaCalculator';
 
 // ─── Types ───────────────────────────────────────────────
 interface HeaderProps {
   gwa: number;
   honor: string;
+  terms: Term[];
 }
 
-// ─── Constants ───────────────────────────────────────────
-const EXCLUDED_NOTICE = 'Reminder: NSTP, PAHF (Movement Competency Training), PE, CWTS, LTS, ROTC, and CAED subjects are automatically excluded from GWA computation per UM academic policy.';
-
 // ─── Component ───────────────────────────────────────────
-export default function Header({ gwa, honor }: HeaderProps) {
+export default function Header({ gwa, honor, terms }: HeaderProps) {
   const [showBanner, setShowBanner] = useState(true);
 
   const navItems = [
-    { to: '/',        label: 'Dashboard', icon: LayoutDashboard },
-    { to: '/honors',  label: 'Honors',    icon: Trophy          },
-    { to: '/scanner', label: 'AI Scanner', icon: ScanLine       },
+    { to: '/',        label: 'Dashboard',  icon: LayoutDashboard },
+    { to: '/honors',  label: 'Honors',     icon: Trophy          },
+    { to: '/scanner', label: 'AI Scanner', icon: ScanLine        },
   ];
+
+  const { totalSubjects, totalUnits } = computeOverallStats(terms);
+  const qualification                 = checkHonorQualification(terms);
+  const hasSubjects                   = totalSubjects > 0;
+  const isDisqualified                = hasSubjects && !qualification.qualifies;
 
   return (
     <header className="bg-white border-b border-blush shadow-warm-sm">
 
-      {/* ── Dismissible Reminder Banner ── */}
+      {/* ── Disqualification Warning Banner ── */}
+      {isDisqualified && (
+        <div className="bg-red-600 px-4 py-2 flex items-start sm:items-center justify-between gap-3">
+          <div className="flex items-start sm:items-center gap-2">
+            <AlertCircle size={14} className="text-white shrink-0 mt-0.5 sm:mt-0" />
+            <p className="text-[11px] sm:text-xs text-white leading-relaxed">
+              ⚠️ You have{' '}
+              <span className="font-bold">
+                {qualification.disqualifyingSubjects.length}{' '}
+                {qualification.disqualifyingSubjects.length === 1 ? 'subject' : 'subjects'}
+              </span>{' '}
+              with a grade below {MIN_GRADE_REQUIREMENT.toFixed(1)} —
+              you are currently <span className="font-bold">not qualified</span> for
+              any Latin Honor or Scholarship regardless of your GWA.
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* ── Policy Reminder Banner ── */}
       {showBanner && (
         <div className="bg-crimson-50 border-b border-crimson-200 px-4 py-2 flex items-start sm:items-center justify-between gap-3">
           <div className="flex items-start sm:items-center gap-2">
             <AlertCircle size={14} className="text-crimson-700 shrink-0 mt-0.5 sm:mt-0" />
             <p className="text-[11px] sm:text-xs text-crimson-700 leading-relaxed">
-              {EXCLUDED_NOTICE}
+              Reminder: NSTP, PAHF (Movement Competency Training, Exercise-Based Fitness,
+              Dance and Sports), PE, CWTS, LTS, ROTC, and CAED 500 are automatically
+              excluded from GWA computation per UM academic policy.
             </p>
           </div>
           <button
@@ -61,6 +95,17 @@ export default function Header({ gwa, honor }: HeaderProps) {
             <span className="block sm:hidden text-crimson-700 font-bold text-sm tracking-wide">
               UMDC Portal
             </span>
+            {/* ── Overall Stats ── */}
+            {hasSubjects && (
+              <div className="hidden sm:flex items-center gap-1.5 mt-0.5">
+                <BookOpen size={10} className="text-warm-400" />
+                <span className="text-[10px] text-warm-400">
+                  <span className="font-semibold text-warm-600">{totalSubjects}</span> subjects
+                  {' · '}
+                  <span className="font-semibold text-warm-600">{totalUnits}</span> units total
+                </span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -73,6 +118,12 @@ export default function Header({ gwa, honor }: HeaderProps) {
             <p className="text-xl md:text-2xl font-bold text-crimson-700 leading-none">
               {gwa > 0 ? gwa.toFixed(2) : '—'}
             </p>
+            {/* Mobile overall stats */}
+            {hasSubjects && (
+              <p className="block sm:hidden text-[9px] text-warm-400 mt-0.5">
+                {totalSubjects} subj · {totalUnits} units
+              </p>
+            )}
           </div>
 
           <div className="border-l border-blush pl-3 md:pl-6 text-right">
@@ -81,14 +132,23 @@ export default function Header({ gwa, honor }: HeaderProps) {
             </p>
             {gwa > 0 ? (
               <>
-                <p className="block sm:hidden text-xs font-semibold text-warm-800">
-                  {honor === 'Summa Cum Laude' ? 'Summa' :
-                   honor === 'Magna Cum Laude' ? 'Magna' :
-                   honor === 'Cum Laude'       ? 'Cum Laude' : 'No Honor'}
-                </p>
-                <p className="hidden sm:block text-sm font-semibold text-warm-800">
-                  {honor}
-                </p>
+                {/* Disqualified override */}
+                {isDisqualified ? (
+                  <p className="text-xs md:text-sm font-semibold text-red-600">
+                    Not Qualified
+                  </p>
+                ) : (
+                  <>
+                    <p className="block sm:hidden text-xs font-semibold text-warm-800">
+                      {honor === 'Summa Cum Laude' ? 'Summa'     :
+                       honor === 'Magna Cum Laude' ? 'Magna'     :
+                       honor === 'Cum Laude'       ? 'Cum Laude' : 'No Honor'}
+                    </p>
+                    <p className="hidden sm:block text-sm font-semibold text-warm-800">
+                      {honor}
+                    </p>
+                  </>
+                )}
               </>
             ) : (
               <p className="text-xs md:text-sm font-semibold text-warm-800">—</p>
@@ -117,7 +177,6 @@ export default function Header({ gwa, honor }: HeaderProps) {
           </NavLink>
         ))}
       </div>
-
     </header>
   );
 }

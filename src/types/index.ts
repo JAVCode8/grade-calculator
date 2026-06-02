@@ -38,3 +38,10 @@ export interface ScholarshipCategory {
     bar: string;
   };
 }
+
+// ── Qualification Result ──────────────────────────────────
+export interface QualificationResult {
+  qualifies: boolean;
+  disqualifyingSubjects: Subject[];
+  lowestGrade: number;
+}
