@@ -6,6 +6,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 
 // 3. Internal — types
 import type { Term, YearLevel, TermPeriod } from './types';
+import type { ScannedSubject } from './utils/geminiScanner';
 
 // 4. Internal — utils
 import { computeCumulativeGWA, getLatinHonor } from './utils/gwaCalculator';
@@ -58,6 +59,47 @@ function App() {
     setTerms(prev => prev.filter(t => t.id !== id));
   };
 
+  // ── Sync scanned subjects to terms ──
+  const handleSyncFromScanner = (scannedSubjects: ScannedSubject[]) => {
+  setTerms(prev => {
+    const updated = [...prev];
+
+    scannedSubjects.forEach(scanned => {
+      let termIndex = updated.findIndex(
+        t => t.yearLevel  === scanned.yearLevel &&
+             t.termPeriod === scanned.termPeriod
+      );
+
+      if (termIndex === -1) {
+        updated.push({
+          id:         Math.random().toString(36).slice(2),
+          yearLevel:  scanned.yearLevel  as YearLevel,
+          termPeriod: scanned.termPeriod as TermPeriod,
+          subjects:   [],
+        });
+        termIndex = updated.length - 1;
+      }
+
+      const exists = updated[termIndex].subjects.some(
+        s => s.name.toUpperCase() === scanned.title.toUpperCase()
+      );
+
+      if (!exists) {
+        updated[termIndex].subjects.push({
+          id:         Math.random().toString(36).slice(2),
+          name:       scanned.title,
+          // ── Fix: explicitly keep 0 grade, don't fallback ──
+          grade:      typeof scanned.grade === 'number' ? scanned.grade : 0,
+          units:      scanned.units,
+          isExcluded: scanned.isExcluded,
+        });
+      }
+    });
+
+    return updated;
+  });
+};
+
   return (
     <div className="min-h-screen bg-cream flex flex-col">
       <Header
@@ -92,7 +134,14 @@ function App() {
               />
             }
           />
-          <Route path="scanner" element={<ScannerPage />} />
+          <Route
+            path="scanner"
+            element={
+              <ScannerPage
+                onSyncToTerms={handleSyncFromScanner}
+              />
+            }
+          />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

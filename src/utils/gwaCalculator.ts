@@ -19,7 +19,7 @@ export const EXCLUDED_KEYWORDS = [
 ];
 
 // ─── Grade & Unit Options ─────────────────────────────────
-export const GRADE_OPTIONS = [4.0, 3.5, 3.0, 2.5, 2.0, 1.0];
+export const GRADE_OPTIONS = [4.0, 3.5, 3.0, 2.5, 2.0, 1.0, 0];
 export const UNIT_OPTIONS  = [1, 2, 3, 4, 5, 6];
 
 // ─── UMDC Grade Scale (Effective AY 2020-2021) ───────────

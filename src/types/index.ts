@@ -39,9 +39,20 @@ export interface ScholarshipCategory {
   };
 }
 
-// ── Qualification Result ──────────────────────────────────
 export interface QualificationResult {
   qualifies: boolean;
   disqualifyingSubjects: Subject[];
   lowestGrade: number;
+}
+
+// ── Scanner Types ─────────────────────────────────────────
+export interface ScannedSubject {
+  courseNumber: string;
+  title:        string;
+  grade:        number;
+  units:        number;
+  termLabel:    string;
+  yearLevel:    string;
+  termPeriod:   string;
+  isExcluded:   boolean;
 }
