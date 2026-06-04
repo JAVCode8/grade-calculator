@@ -51,7 +51,7 @@ export default function SubjectRow({ subject, onUpdate, onDelete }: SubjectRowPr
   // ── Grade status helpers ──
   const hasNoGrade   = subject.grade === 0;
   const isFailGrade  = subject.grade === 1.0;
-  const isLowGrade   = subject.grade > 0 && subject.grade < 2.5;
+  const isLowGrade   = subject.grade > 0 && subject.grade < 3.0;
 
   const rowBg = subject.isExcluded
     ? 'bg-warm-50 border-warm-200'
@@ -93,7 +93,7 @@ export default function SubjectRow({ subject, onUpdate, onDelete }: SubjectRowPr
           )}
           {isLowGrade && !subject.isExcluded && (
             <span className="inline-flex items-center gap-1 text-[10px] text-red-400 font-medium">
-              <AlertTriangle size={9} /> Grade below 2.5 — not qualified for honors
+              <AlertTriangle size={9} /> Grade below 3.0 — not qualified for honors
             </span>
           )}
         </div>

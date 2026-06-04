@@ -1,19 +1,15 @@
-// 1. Third-party
 import { Info } from 'lucide-react';
 
-// ─── Types ───────────────────────────────────────────────
 interface ExcludedSubject {
   code: string;
   fullName: string;
   variants: string[];
 }
 
-// ─── Constants ───────────────────────────────────────────
-// Source: UM Student Handbook Section 2.9.2 Page 40
-// + actual UMDC subject names from curriculum
+
 const EXCLUDED_SUBJECTS: ExcludedSubject[] = [
   {
-    code:     'NSTP 1 & 2',
+    code: 'NSTP 1 & 2',
     fullName: 'National Service Training Program',
     variants: [
       'NATIONAL SERVICE TRAINING PROGRAM 1',
@@ -21,38 +17,43 @@ const EXCLUDED_SUBJECTS: ExcludedSubject[] = [
     ],
   },
   {
-    code:     'PAHF 1',
+    code: 'PAHF 1',
     fullName: 'Movement Competency Training',
     variants: ['PAHF 1', 'MOVEMENT COMPETENCY TRAINING'],
   },
   {
-    code:     'PAHF 2',
+    code: 'PAHF 2',
     fullName: 'Exercise-Based Fitness Activities',
     variants: ['PAHF 2', 'EXERCISE-BASED FITNESS ACTIVITIES'],
   },
   {
-    code:     'PAHF 3',
+    code: 'PAHF 3',
     fullName: 'Dance and Sports 1',
     variants: ['PAHF 3', 'DANCE AND SPORTS 1'],
   },
   {
-    code:     'PAHF 4',
+    code: 'PAHF 4',
     fullName: 'Dance and Sports 2',
     variants: ['PAHF 4', 'DANCE AND SPORTS 2'],
   },
   {
-    code:     'CAED 500',
+    code: 'CAED 500',
     fullName: 'Career and Personality Development',
     variants: ['CAED 500'],
   },
   {
-    code:     'CWTS / LTS / ROTC',
+    code: 'CWTS / LTS / ROTC',
     fullName: 'NSTP Components',
     variants: [
       'Civic Welfare Training Service',
       'Literacy Training Service',
       'Reserve Officers Training Corps',
     ],
+  }, 
+  {
+    code: 'GPE / PE',
+    fullName: 'Physical Education',
+    variants: ['GPE', 'PE', 'PHYSICAL EDUCATION'],
   },
 ];
 
@@ -67,7 +68,7 @@ export default function PolicyNotice() {
         <div>
           <p className="text-sm font-semibold text-crimson-700">Policy Notice</p>
           <p className="text-[10px] text-crimson-500">
-            Per UM Student Handbook — Section 2.9.2, Page 40
+            Per UM Student Handbook 2024 — Section 2.10.2, Page 52
           </p>
         </div>
       </div>
@@ -124,13 +125,11 @@ export default function PolicyNotice() {
       {/* ── Footer ── */}
       <div className="px-4 md:px-5 py-3 border-t border-blush">
         <p className="text-[10px] text-warm-400 leading-relaxed">
-          📌 Source: UM Student Handbook, Section 2.9.2 —{' '}
+          📌 Source: UM Student Handbook 2024, Section 2.10.2, Page 52 —{' '}
           <span className="italic">
-            "The following subjects are not included in the computation
-            of the GWA: PE, NSTP and CAED 500."
+            "Has no grade below 3.0 (under the new grading system), in any subject enrolled,
           </span>{' '}
-          PAHF subjects are excluded as the modern equivalent of PE
-          under the UMDC curriculum.
+          except for Physical Education (PAHF, GPE, PE), NSTP and CAED 500."
         </p>
       </div>
 

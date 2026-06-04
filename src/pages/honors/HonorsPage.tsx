@@ -80,7 +80,7 @@ export default function HonorsPage({ currentGWA, terms }: HonorsPageProps) {
                 with a grade below{' '}
                 <span className="font-bold">{MIN_GRADE_REQUIREMENT.toFixed(1)}</span>.
                 Per UM Handbook Section 2.9.2, a candidate must have{' '}
-                <span className="font-bold">no grade below 2.5</span> in any
+                <span className="font-bold">a candidate must have no grade below 3.0</span> in any
                 subject to qualify for Latin Honors or Scholarships.
               </p>
 
@@ -192,7 +192,7 @@ export default function HonorsPage({ currentGWA, terms }: HonorsPageProps) {
               <AlertCircle size={13} className="text-crimson-700 shrink-0 mt-0.5" />
               <p className="text-[11px] text-crimson-700 leading-relaxed">
                 Candidates must have{' '}
-                <strong>no grade below 2.5</strong> in any subject.
+                <strong>a candidate must have no grade below 3.0</strong> in any subject.
                 PE, NSTP, and CAED 500 are excluded from GWA computation.
               </p>
             </div>

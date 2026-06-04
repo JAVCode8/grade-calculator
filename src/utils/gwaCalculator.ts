@@ -9,6 +9,7 @@ export const EXCLUDED_KEYWORDS = [
   'LTS',
   'ROTC',
   'PAHF',
+  'GPE',
   'MOVEMENT COMPETENCY',
   'EXERCISE-BASED FITNESS',
   'DANCE AND SPORTS',
@@ -41,8 +42,9 @@ export const LATIN_HONORS: LatinHonor[] = [
 ];
 
 // ─── Minimum Grade Requirement ────────────────────────────
-// Source: UM Handbook Section 2.9.2 — "no grade below 2.5 (80)"
-export const MIN_GRADE_REQUIREMENT = 2.5;
+// Source: UM Student Handbook 2024, Section 2.10.2, Page 52
+// "Has no grade below 3.0 (under the new grading system)"
+export const MIN_GRADE_REQUIREMENT = 3.0;
 
 // ─── Helpers ─────────────────────────────────────────────
 export const isExcludedSubject = (name: string): boolean => {
