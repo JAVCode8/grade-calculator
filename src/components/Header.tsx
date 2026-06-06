@@ -90,10 +90,10 @@ export default function Header({ gwa, honor, terms }: HeaderProps) {
           </div>
           <div>
             <span className="hidden sm:block text-crimson-700 font-bold text-sm tracking-wide">
-              UMDC Academic Portal
+              UMDC GWA-C
             </span>
             <span className="block sm:hidden text-crimson-700 font-bold text-sm tracking-wide">
-              UMDC Portal
+              UMDC GWA-C
             </span>
             {/* ── Overall Stats ── */}
             {hasSubjects && (
